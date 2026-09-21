@@ -45,6 +45,14 @@ describe('predicate shapes agents actually write', () => {
     });
   });
 
+  it('accepts `query` as the text predicate body, not just `contains`', () => {
+    // #1001.1: agents reach for `query` by analogy with `element` predicates and `reticle_query`.
+    expect(parsePredicate({ kind: PredicateKind.TEXT, query: 'Saved' })).toEqual({
+      kind: PredicateKind.TEXT,
+      contains: 'Saved',
+    });
+  });
+
   it('lifts a flat role/text pair into the element query', () => {
     expect(parsePredicate({ kind: PredicateKind.ELEMENT, role: 'button', text: 'Save' })).toEqual({
       kind: PredicateKind.ELEMENT,
@@ -84,6 +92,12 @@ describe('a rejection names the fields that kind accepts', () => {
     const message = messageOf({ kind: PredicateKind.NET, nope: 1 });
     expect(message).toContain('urlContains');
     expect(message).toContain('status');
+  });
+
+  it('lists the text predicate fields', () => {
+    const message = messageOf({ kind: PredicateKind.TEXT, selector: '.grid' });
+    expect(message).toContain('text accepts');
+    expect(message).toContain('contains');
   });
 
   it('names the valid kinds when the kind itself is wrong', () => {
